@@ -1,5 +1,6 @@
 package com.example.demo.model.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.model.entity.Cliente;
 import com.example.demo.model.entity.Factura;
+import com.example.demo.model.entity.Producto;
 import com.example.demo.model.service.IClienteService;
 
 @Controller
@@ -36,9 +39,10 @@ public class FacturaController {
 		map.put("titulo", "crear factura");
 		return "factura/form";
 	}
-	@GetMapping("/form")
-	public String guardar(Factura factura,SessionStatus status) {
+	
+	@GetMapping(value="/cargar-productos/{term}",produces= {"application/json"})
+	public @ResponseBody List<Producto>cargarProducto(@PathVariable("term")String term) {
 		
-		return "redirect:/listar";
+		return clienteService.findByNombre(term);
 	}
 }
