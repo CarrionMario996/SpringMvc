@@ -45,6 +45,19 @@
 						</div>
 					</div>
 					<table th:replace="factura/plantilla-items::itemsFactura"></table>
+					<table id="cargarItemProductos"
+						class="table table-sm table-striped table-hover">
+						<thead>
+							<tr>
+								<th>nombre</th>
+								<th>precio</th>
+								<th>cantidad</th>
+								<th>total</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
 					<div class="form-group row">
 						<div class="col-sm-6">
 							<input type="submit" th:value="${titulo}"
@@ -59,6 +72,6 @@
 	</div>
 
 	<footer th:replace="layout/layout::footer"></footer>
-	<script  th:replace="factura/js/autocomplete-productos ::javascript"></script>
+	<script th:replace="factura/js/autocomplete-productos ::javascript"></script>
 </body>
 </html>
