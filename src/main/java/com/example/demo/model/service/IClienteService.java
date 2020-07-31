@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.example.demo.model.entity.Cliente;
+import com.example.demo.model.entity.Factura;
 import com.example.demo.model.entity.Producto;
 
 public interface IClienteService {
@@ -21,5 +22,7 @@ public interface IClienteService {
 	
 	public List<Producto>findByNombre(String term);
 	
+	public void saveFactura(Factura factura);
 	
+	public Producto findProductoById(Long id);
 }
