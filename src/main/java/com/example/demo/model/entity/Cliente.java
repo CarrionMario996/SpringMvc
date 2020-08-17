@@ -113,4 +113,9 @@ public class Cliente implements Serializable {
 		facturas.add(factura);
 	}
 
+	@Override
+	public String toString() {
+		return  nombre + " " + apellido ;
+	}
+
 }

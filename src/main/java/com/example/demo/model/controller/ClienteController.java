@@ -56,10 +56,10 @@ public class ClienteController {
 
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable("id") Long id, Model model, RedirectAttributes flash) {
-		Cliente cliente = clienteService.findOne(id);
+		Cliente cliente = clienteService.fecthByIdWithFacturas(id);//clienteService.findOne(id);
 		if (cliente == null) {
 			flash.addFlashAttribute("error", "cliente no existe en bd");
-			return "redirect/:listar";
+			return "redirect:/listar";
 		}
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("titulo", "Detalle cliente " + cliente.getNombre());
