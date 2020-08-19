@@ -3,6 +3,7 @@ package com.example.demo.model.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -15,6 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +38,8 @@ import com.example.demo.model.service.IClienteService;
 import com.example.demo.model.service.IUploadFileService;
 import com.example.demo.model.util.paginator.PageRender;
 
+import ch.qos.logback.classic.Logger;
+
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
@@ -39,7 +47,8 @@ public class ClienteController {
 	private IClienteService clienteService;
 	@Autowired
 	private IUploadFileService fileService;
-
+	
+    @Secured("ROLE_USER")
 	@GetMapping("/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable("filename") String filename) {
 		Resource recurso=null;
@@ -53,7 +62,7 @@ public class ClienteController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
 				.body(recurso);
 	}
-
+    @Secured("ROLE_USER")
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable("id") Long id, Model model, RedirectAttributes flash) {
 		Cliente cliente = clienteService.fecthByIdWithFacturas(id);//clienteService.findOne(id);
@@ -67,8 +76,9 @@ public class ClienteController {
 
 	}
 
-	@GetMapping("/listar")
+	@GetMapping({"/listar","/"})
 	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Map<String, Object> map) {
+	
 		Pageable pageRequest = PageRequest.of(page, 4);
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);
 		PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
@@ -78,6 +88,7 @@ public class ClienteController {
 		return "listar";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form")
 	public String crear(Map<String, Object> map) {
 		Cliente cliente = new Cliente();
@@ -85,7 +96,7 @@ public class ClienteController {
 		map.put("cliente", cliente);
 		return "form";
 	}
-
+	@Secured("ROLE_ADMIN")
 	@PostMapping("/form")
 	public String guardar(@Valid Cliente cliente, BindingResult result, SessionStatus status, Map<String, Object> map,
 			RedirectAttributes flash, @RequestParam("file") MultipartFile foto) {
@@ -117,7 +128,7 @@ public class ClienteController {
 		flash.addFlashAttribute("success", mensajeFlash);
 		return "redirect:/listar";
 	}
-
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form/{id}")
 	public String editar(@PathVariable(name = "id") Long id, Model model, RedirectAttributes flash) {
 		Cliente cliente = null;
@@ -136,7 +147,7 @@ public class ClienteController {
 		model.addAttribute("cliente", cliente);
 		return "form";
 	}
-
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/eliminar/{id}")
 	public String eliminar(@PathVariable(name = "id") Long id, RedirectAttributes flash) {
 		if (id > 0) {
@@ -151,4 +162,5 @@ public class ClienteController {
 		}
 		return "redirect:/listar";
 	}
+	
 }
