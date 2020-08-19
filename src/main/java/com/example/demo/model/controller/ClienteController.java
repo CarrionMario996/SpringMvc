@@ -4,12 +4,14 @@ package com.example.demo.model.controller;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +45,8 @@ import ch.qos.logback.classic.Logger;
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
+	@Autowired 
+	private MessageSource messageSource;
 	@Autowired
 	private IClienteService clienteService;
 	@Autowired
@@ -77,12 +81,12 @@ public class ClienteController {
 	}
 
 	@GetMapping({"/listar","/"})
-	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Map<String, Object> map) {
+	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Map<String, Object> map,Locale locale) {
 	
 		Pageable pageRequest = PageRequest.of(page, 4);
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);
 		PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
-		map.put("titulo", "Listado de clientes");
+		map.put("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
 		map.put("clientes", clientes);
 		map.put("page", pageRender);
 		return "listar";

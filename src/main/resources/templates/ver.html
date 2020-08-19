@@ -14,6 +14,8 @@
 					<a sec:authorize="hasRole('ROLE_ADMIN')"
 						th:href="@{'/factura/form/' +${cliente.id}}"><input
 						type="submit" value="crear factura" class="btn btn-outline-dark" /></a>
+						<a th:href="@{'/factura/ver/'+${factura.id}(format=pdf)}" class="btn btn-danger btn-xs float-right">PDF</a>
+				
 				</h4>
 				<img th:if="${#strings.length(cliente.foto)>0}"
 					class="img-thumbnail rounded float-left " style="max-width: 25%;"
