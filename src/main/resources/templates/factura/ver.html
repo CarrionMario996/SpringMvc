@@ -10,7 +10,12 @@
 			<div class="card-body">
 				<h4 class="card-title">
 					<a th:href="@{'/ver/'+${factura.cliente.id}}"
-						class="btn btn-light btn-xs">&laquo; volver</a>
+						class="btn btn-light btn-xs">&laquo; volver</a> <a
+						class="btn btn-danger btn-xs float-right mx-2"
+						th:href="@{'/factura/ver/'+${factura.id}(format=pdf)}">PDF</a> <a
+						class="btn btn-success btn-xs float-right"
+						th:href="@{'/factura/ver/'+${factura.id}(format=xlsx)}">XLS</a>
+						
 				</h4>
 				<ul class="list-group my-2">
 					<li class="list-group-item list-group-item-primary"
@@ -54,12 +59,15 @@
 					Gran total<span th:text="${factura.total}"
 						class="badge badge-secondary"></span>
 				</h5>
-				<div class="card border-info mb-4" style="max-width:20rem;">
-				<div class="card-header">observaciones</div>
-				<div class="card-body">
-				<p  class="card-text" th:text="${factura.observacion}" th:if="${not #strings.isEmpty(factura.observacion)}"></p>
-				<h4 class="card-title" th:if="${#strings.isEmpty(factura.observacion)}" th:text="'No tiene observaciones'"></h4>
-				</div>
+				<div class="card border-info mb-4" style="max-width: 20rem;">
+					<div class="card-header">observaciones</div>
+					<div class="card-body">
+						<p class="card-text" th:text="${factura.observacion}"
+							th:if="${not #strings.isEmpty(factura.observacion)}"></p>
+						<h4 class="card-title"
+							th:if="${#strings.isEmpty(factura.observacion)}"
+							th:text="'No tiene observaciones'"></h4>
+					</div>
 				</div>
 			</div>
 		</div>

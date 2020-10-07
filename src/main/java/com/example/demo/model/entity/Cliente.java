@@ -22,6 +22,10 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "clientes")
 public class Cliente implements Serializable {
@@ -39,6 +43,7 @@ public class Cliente implements Serializable {
 	private String email;
 	@Column(name = "create_at")
 	@Temporal(TemporalType.DATE)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createAt;
 	private String foto;
 
@@ -46,6 +51,7 @@ public class Cliente implements Serializable {
 		this.facturas = new ArrayList<Factura>();
 	}
 	@OneToMany(mappedBy = "cliente",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	@JsonManagedReference
 	private List<Factura> facturas;
 
 	public List<Factura> getFacturas() {

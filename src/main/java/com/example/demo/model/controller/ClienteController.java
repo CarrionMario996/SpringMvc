@@ -1,12 +1,12 @@
 package com.example.demo.model.controller;
 
-
 import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 
 import javax.validation.Valid;
 
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,23 +40,24 @@ import com.example.demo.model.entity.Cliente;
 import com.example.demo.model.service.IClienteService;
 import com.example.demo.model.service.IUploadFileService;
 import com.example.demo.model.util.paginator.PageRender;
+import com.example.demo.view.xml.ClienteList;
 
-import ch.qos.logback.classic.Logger;
+
 
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
-	@Autowired 
+	@Autowired
 	private MessageSource messageSource;
 	@Autowired
 	private IClienteService clienteService;
 	@Autowired
 	private IUploadFileService fileService;
-	
-    @Secured("ROLE_USER")
+
+	@Secured("ROLE_USER")
 	@GetMapping("/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable("filename") String filename) {
-		Resource recurso=null;
+		Resource recurso = null;
 		try {
 			recurso = fileService.load(filename);
 		} catch (MalformedURLException e) {
@@ -66,10 +68,11 @@ public class ClienteController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
 				.body(recurso);
 	}
-    @Secured("ROLE_USER")
+
+	@Secured("ROLE_USER")
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable("id") Long id, Model model, RedirectAttributes flash) {
-		Cliente cliente = clienteService.fecthByIdWithFacturas(id);//clienteService.findOne(id);
+		Cliente cliente = clienteService.fecthByIdWithFacturas(id);// clienteService.findOne(id);
 		if (cliente == null) {
 			flash.addFlashAttribute("error", "cliente no existe en bd");
 			return "redirect:/listar";
@@ -80,9 +83,15 @@ public class ClienteController {
 
 	}
 
-	@GetMapping({"/listar","/"})
-	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Map<String, Object> map,Locale locale) {
-	
+	@GetMapping("/listar-rest")
+	public @ResponseBody ClienteList listarRest() {
+		return new ClienteList( clienteService.findAll());
+	}
+
+	@GetMapping({ "/listar", "/" })
+	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Map<String, Object> map,
+			Locale locale) {
+
 		Pageable pageRequest = PageRequest.of(page, 4);
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);
 		PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
@@ -100,6 +109,7 @@ public class ClienteController {
 		map.put("cliente", cliente);
 		return "form";
 	}
+
 	@Secured("ROLE_ADMIN")
 	@PostMapping("/form")
 	public String guardar(@Valid Cliente cliente, BindingResult result, SessionStatus status, Map<String, Object> map,
@@ -113,8 +123,8 @@ public class ClienteController {
 			if (cliente.getId() != null && cliente.getId() > 0 && cliente.getFoto() != null
 					&& cliente.getFoto().length() > 0) {
 				fileService.delete(cliente.getFoto());
-				}
-			String uniqueFilename=null;
+			}
+			String uniqueFilename = null;
 			try {
 				uniqueFilename = fileService.copy(foto);
 			} catch (IOException e) {
@@ -132,6 +142,7 @@ public class ClienteController {
 		flash.addFlashAttribute("success", mensajeFlash);
 		return "redirect:/listar";
 	}
+
 	@Secured("ROLE_ADMIN")
 	@GetMapping("/form/{id}")
 	public String editar(@PathVariable(name = "id") Long id, Model model, RedirectAttributes flash) {
@@ -151,6 +162,7 @@ public class ClienteController {
 		model.addAttribute("cliente", cliente);
 		return "form";
 	}
+
 	@Secured("ROLE_ADMIN")
 	@GetMapping("/eliminar/{id}")
 	public String eliminar(@PathVariable(name = "id") Long id, RedirectAttributes flash) {
@@ -158,13 +170,13 @@ public class ClienteController {
 			Cliente cliente = clienteService.findOne(id);
 			clienteService.delete(id);
 			flash.addFlashAttribute("success", "cliente eliminado con exito");
-			
-				if (fileService.delete(cliente.getFoto())) {
-					flash.addFlashAttribute("info", "foto" + cliente.getFoto() + "eliminada");
-				}			
+
+			if (fileService.delete(cliente.getFoto())) {
+				flash.addFlashAttribute("info", "foto" + cliente.getFoto() + "eliminada");
+			}
 
 		}
 		return "redirect:/listar";
 	}
-	
+
 }

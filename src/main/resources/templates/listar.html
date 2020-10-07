@@ -9,6 +9,14 @@
 		<div class="card bg-light">
 			<div class="card-header   text-center" th:text="${titulo}"></div>
 			<div class="card-body">
+				<h4 class="card-title">
+					<a class="btn btn-outline-warning btn-xs float-right"
+						th:href="@{'/listar'(format=json)}">Json</a> <a
+						class="btn btn-success btn-xs float-right"
+						th:href="@{'/listar'(format=csv)}">Csv</a> <a
+						class="btn btn-outline-success btn-xs float-right"
+						th:href="@{'/listar'(format=xml)}">Xml</a>
+				</h4>
 				<table class="table table-striped">
 					<thead>
 						<tr>

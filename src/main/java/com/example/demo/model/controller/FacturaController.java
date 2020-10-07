@@ -44,7 +44,7 @@ public class FacturaController {
 			return "redirect:/listar";
 		}
 		model.addAttribute("factura", factura);
-		model.addAttribute("titulo", "factura:" + factura.getDescripcion());
+		model.addAttribute("titulo", "Factura: " + factura.getDescripcion());
 		return "factura/ver";
 	}
 
